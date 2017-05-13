@@ -2,8 +2,9 @@
 #include <SFML/Graphics.hpp>
 using namespace std;
 
-int main(int argc, char* argv[]) {
+extern "C" int func(int a, int b);
 
+int main(int argc, char* argv[]) {
     sf::Image BMPimage;
     BMPimage.loadFromFile("../input_big.bmp");
 
@@ -28,6 +29,8 @@ int main(int argc, char* argv[]) {
         window.draw(imageSprite);
         window.display();
     }
+
+    std::cout << func(4,5);
 
     return 0;
 }
