@@ -11,26 +11,40 @@ extern "C" int mean_filter(int width, int height, int window, const sf::Uint8 *i
 
 int main(int argc, char *argv[])
 {
+    std::string inputFileName = "../images/input.bmp";
+    int inputWindow = 3;
+
+    std::cout << "MeanFilter" << std::endl;
+    std::cout << "Podaj nazwe pliku wejsciowego" << std::endl;
+    std::cin >> inputFileName;
+    std::cout << "Podaj rozmiar okna (liczba nieparzysta <3-15>)" << std::endl;
+    std::cin >> inputWindow;
+
+    if(inputWindow > 15 || inputWindow % 2 == 0) {
+        std::cout << "nieprawidlowy rozmiar okna" << std::endl;
+        return -1;
+    }
+
     sf::Image srcImg;
     sf::Image outImg;
 
-    if (!srcImg.loadFromFile("../images/input.bmp")) {
+    if (!srcImg.loadFromFile(inputFileName)) {
         std::cout << "failed to open image" << std::endl;
         return -1;
     }
 
-    sf::Vector2u BMPsize = srcImg.getSize();
-    sf::RenderWindow window(sf::VideoMode(BMPsize.x, BMPsize.y), "MeanFilter");
+    sf::Vector2u srcImgSize = srcImg.getSize();
+    sf::RenderWindow window(sf::VideoMode(srcImgSize.x, srcImgSize.y), "MeanFilter");
 
-    outImg.create(BMPsize.x, BMPsize.y);
+    outImg.create(srcImgSize.x, srcImgSize.y);
     sf::Texture imageTexture;
     imageTexture.loadFromImage(outImg);
     sf::Sprite imageSprite(imageTexture);
 
     if (USE_ASSEMBLER_VERSION) {
-        mean_filter(BMPsize.x, BMPsize.y, 3, srcImg.getPixelsPtr(), outImg.getPixelsPtr());
+        mean_filter(srcImgSize.x, srcImgSize.y, inputWindow, srcImg.getPixelsPtr(), outImg.getPixelsPtr());
     } else {
-        mean_filter_cpp(BMPsize.x, BMPsize.y, 3, srcImg, outImg);
+        mean_filter_cpp(srcImgSize.x, srcImgSize.y, inputWindow, srcImg, outImg);
     }
 
 
