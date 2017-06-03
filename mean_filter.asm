@@ -147,7 +147,7 @@ proc:
     mov     eax,0
     mov     edx,0
     mov     dl, byte[window_area]
-    MOVD    ecx,mm0                     ;ecx = LOW mm0
+    movd    ecx,mm0                     ;ecx = LOW mm0
 
     mov     ah,ch
     mov     al,cl
@@ -162,7 +162,7 @@ proc:
     mov     byte[esi+4*ebx+1],al        ; G
 
     psrlq   mm0,32
-    MOVD    ecx,mm0
+    movd    ecx,mm0
 
     mov     ah,ch
     mov     al,cl
