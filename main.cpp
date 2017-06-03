@@ -41,16 +41,14 @@ int main(int argc, char *argv[])
                 window.close();
 
             imageTexture.loadFromImage(outImg);
-
             window.clear();
             window.draw(imageSprite);
             window.display();
         }
-
-        outImg.saveToFile("../output.bmp");
-
-        return 0;
     }
+
+    outImg.saveToFile("../output.bmp");
+    return 0;
 }
 
 
