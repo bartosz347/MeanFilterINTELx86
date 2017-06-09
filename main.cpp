@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     imageTexture.loadFromImage(outImg);
     sf::Sprite imageSprite(imageTexture), backgroundImageSprite(backgroundImageTexture);
 
+    // window size and scaling
     if (srcImgSize.x > sf::VideoMode::getDesktopMode().width || srcImgSize.y > sf::VideoMode::getDesktopMode().height) {
         imageSprite.setScale(sf::VideoMode::getDesktopMode().width / (srcImgSize.x * 1.5f),
                              sf::VideoMode::getDesktopMode().height / (srcImgSize.y * 1.5f));

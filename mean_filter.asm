@@ -11,15 +11,8 @@
 %define     kernelY     ebp-8
 %define     cursorX     ebp-12
 %define     cursorY     ebp-16
-%define     window_size ebp-20 ; window/2
-%define     window_area ebp-24 ; window*window
-
-
-;; todo
-;; cleanup
-;; window_size, window_area are used as bytes, not dwords
-;; eliminate jmp ?
-;; window can't be greater than 15, (limits: 255*k is saved on 16bits, window*window  is saved on 8 bits
+%define     window_size ebp-20          ; byte window/2
+%define     window_area ebp-21          ; byte window*window
 
 section	    .text
 global      _mean_filter
@@ -169,13 +162,7 @@ proc:
     div     dl
     mov     byte[esi+4*ebx+2],al        ; B
 
-    sar     ecx, 16
-
-;    mov     ah,ch
-;    mov     al,cl
-;    div     dl
-;    mov     byte[esi+4*ebx+3],al
-    mov      byte[esi+4*ebx+3],255             ; A, always 255
+    mov      byte[esi+4*ebx+3],255      ; A, always 255
 
 
     inc     dword [kernelX]
@@ -189,7 +176,6 @@ skip1:
     mov     edi, [kernelY]
     cmp     edi,[HEIGHT]
     jl      start_new_kernel
-
 
 
 	mov     eax,0     ;return 0
