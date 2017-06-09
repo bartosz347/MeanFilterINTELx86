@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include <SFML/Graphics.hpp>
 #include "mean_filter_cpp_ugly.h"
 
@@ -10,13 +11,13 @@ extern "C" int mean_filter(int width, int height, int window, const sf::Uint8 *i
 
 int main(int argc, char *argv[])
 {
-    std::string inputFileName = "../images/input.bmp";
-    int inputWindow = 3;
+    std::string inputFileName = "../images/input_vbig.jpg";
+    int inputWindow = 15;
 
     std::cout << "MeanFilter" << std::endl;
     std::cout << "Podaj nazwe pliku wejsciowego" << std::endl;
     std::cin >> inputFileName;
-    std::cout << "Podaj rozmiar okna (liczba nieparzysta <3-15>)" << std::endl;
+    std::cout << "Podaj rozmiar okna (liczba nieparzysta <3,15>)" << std::endl;
     std::cin >> inputWindow;
 
     if (inputWindow > 15 || inputWindow % 2 == 0) {
@@ -33,17 +34,31 @@ int main(int argc, char *argv[])
     }
 
     sf::Vector2u srcImgSize = srcImg.getSize();
-    sf::RenderWindow window(sf::VideoMode(srcImgSize.x, srcImgSize.y), "MeanFilter");
-
-    outImg.create(srcImgSize.x, srcImgSize.y);
-    sf::Texture imageTexture;
+    outImg.create(srcImgSize.x, srcImgSize.y, sf::Color{0,0,0,0});
+    sf::Texture imageTexture, backgroundImageTexture;
+    backgroundImageTexture.loadFromImage(srcImg);
     imageTexture.loadFromImage(outImg);
-    sf::Sprite imageSprite(imageTexture);
+    sf::Sprite imageSprite(imageTexture), backgroundImageSprite(backgroundImageTexture);
+
+    if (srcImgSize.x > sf::VideoMode::getDesktopMode().width || srcImgSize.y > sf::VideoMode::getDesktopMode().height) {
+        imageSprite.setScale(sf::VideoMode::getDesktopMode().width / (srcImgSize.x * 1.5f),
+                             sf::VideoMode::getDesktopMode().height / (srcImgSize.y * 1.5f));
+        backgroundImageSprite.setScale(sf::VideoMode::getDesktopMode().width / (srcImgSize.x * 1.5f),
+                                       sf::VideoMode::getDesktopMode().height / (srcImgSize.y * 1.5f));
+    }
+    unsigned int windowWidth = static_cast<unsigned int>(srcImgSize.x < sf::VideoMode::getDesktopMode().width
+                                                         ? srcImgSize.x : srcImgSize.x *
+                                                                          imageSprite.getScale().x);
+    unsigned int windowHeight = static_cast<unsigned int>(srcImgSize.y < sf::VideoMode::getDesktopMode().height
+                                                          ? srcImgSize.y : srcImgSize.y *
+                                                                           imageSprite.getScale().y);
+
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "MeanFilter");
 
 #ifdef USE_CPP_VERSION
-    mean_filter_cpp(srcImgSize.x, srcImgSize.y, inputWindow, srcImg, outImg);
+    std::thread threadObj(mean_filter_cpp, srcImgSize.x, srcImgSize.y, inputWindow, std::ref(srcImg), std::ref(outImg));
 #else
-    mean_filter(srcImgSize.x, srcImgSize.y, inputWindow, srcImg.getPixelsPtr(), outImg.getPixelsPtr());
+    std::thread threadObj(mean_filter, srcImgSize.x, srcImgSize.y, inputWindow, srcImg.getPixelsPtr(), outImg.getPixelsPtr());
 #endif
 
     while (window.isOpen()) {
@@ -52,17 +67,18 @@ int main(int argc, char *argv[])
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
         imageTexture.loadFromImage(outImg);
         window.clear();
+        window.draw(backgroundImageSprite);
         window.draw(imageSprite);
         window.display();
-
     }
 
+    if (threadObj.joinable()) {
+        threadObj.join();
+    }
     outImg.saveToFile("../output.bmp");
+
     return 0;
 }
-
-
-
-

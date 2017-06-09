@@ -1,18 +1,18 @@
 
-; processImage arguments
-%define SRC_IMG 	ebp+20
-%define OUT_IMG     ebp+24
-%define WIDTH       ebp+8
-%define HEIGHT      ebp+12
-%define WINDOW      ebp+16
+; mean_filter arguments
+%define     SRC_IMG 	ebp+20
+%define     OUT_IMG     ebp+24
+%define     WIDTH       ebp+8
+%define     HEIGHT      ebp+12
+%define     WINDOW      ebp+16
 
 ; local variables
-%define kernelX     ebp-4
-%define kernelY     ebp-8
-%define cursorX     ebp-12
-%define cursorY     ebp-16
-%define window_size ebp-20 ; window/2
-%define window_area ebp-24 ; window*window
+%define     kernelX     ebp-4
+%define     kernelY     ebp-8
+%define     cursorX     ebp-12
+%define     cursorY     ebp-16
+%define     window_size ebp-20 ; window/2
+%define     window_area ebp-24 ; window*window
 
 
 ;; todo
@@ -21,8 +21,8 @@
 ;; eliminate jmp ?
 ;; window can't be greater than 15, (limits: 255*k is saved on 16bits, window*window  is saved on 8 bits
 
-section	.text
-global  _mean_filter
+section	    .text
+global      _mean_filter
 
 _mean_filter:
     push    ebp
@@ -175,7 +175,7 @@ proc:
 ;    mov     al,cl
 ;    div     dl
 ;    mov     byte[esi+4*ebx+3],al
-   mov      byte[esi+3],255             ; A, always 255
+    mov      byte[esi+4*ebx+3],255             ; A, always 255
 
 
     inc     dword [kernelX]
