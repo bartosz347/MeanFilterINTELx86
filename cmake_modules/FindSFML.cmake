@@ -71,7 +71,6 @@ set(FIND_SFML_PATHS
     /sw
     /opt/local
     /opt/csw
-	 C:/Users/Bartosz/Dropbox/_CATEGORIES_/PW/sem4/ARKO/projekt_INTEL/SFML-2.4.2
     /opt)
 
 # find the SFML include directory
