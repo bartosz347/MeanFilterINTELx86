@@ -11,8 +11,8 @@ extern "C" int mean_filter(int width, int height, int window, const sf::Uint8 *i
 
 int main(int argc, char *argv[])
 {
-    std::string inputFileName = "../images/input_vbig.jpg";
-    int inputWindow = 15;
+    std::string inputFileName = "../images/input_big.bmp";
+    int inputWindow = 9;
 
     std::cout << "MeanFilter" << std::endl;
     std::cout << "Podaj nazwe pliku wejsciowego" << std::endl;

@@ -39,7 +39,7 @@ _mean_filter:
 
 
 start_new_kernel:
-    PSLLDQ  xmm2,64
+    pslldq  xmm2,64
     mov     esi, dword [kernelX]        ; esi = kernel.x
     mov     edi, dword [kernelY]
     mov     eax, 0
@@ -51,7 +51,6 @@ start_new_kernel:
 
 
 process_next_column_in_row:
-
     cmp     dword [cursorX], 0
     jge     cursor_x_gt_zero
     mov     dword [cursorX], 0
@@ -60,7 +59,6 @@ cursor_x_gt_zero:
     jge     cursor_y_gt_zero
     mov     dword [cursorY], 0
 cursor_y_gt_zero:
-
     mov     eax,0
     mov     al, byte [window_size]      ; al = window_size
     mov     esi, dword [kernelX]        ; esi = kernel.x
@@ -75,8 +73,8 @@ cursor_y_gt_zero:
     jge     load_single_rgba_to_xmm
 
 load_double_rgba_to_xmm:
-    PMOVZXBW xmm1, [4*eax+ecx]          ; loading 2xRGBA to xmm1
-    PADDQ   xmm2,xmm1                   ; xmm2 += xmm1
+    pmovzxbw xmm1, [4*eax+ecx]          ; loading 2xRGBA to xmm1
+    paddq   xmm2,xmm1                   ; xmm2 += xmm1
 
     add     dword [cursorX], 2          ; cursor.x += 2
     mov     edx, dword [cursorX]        ; edx = cursor.x
@@ -93,13 +91,13 @@ load_double_rgba_to_xmm:
 
 
 load_single_rgba_to_xmm:
-    PSLLDQ  xmm1,64
-    PINSRB  xmm1, [4*eax+ecx], 0        ; Insert a byte integer R
-    PINSRB  xmm1, [4*eax+ecx+1], 2      ; Insert a byte integer G
-    PINSRB  xmm1, [4*eax+ecx+2], 4      ; Insert a byte integer B
-    PINSRB  xmm1, [4*eax+ecx+3], 6      ; Insert a byte integer A
+    pslldq  xmm1,64
+    pinsrb  xmm1, [4*eax+ecx], 0        ; Insert a byte integer R
+    pinsrb  xmm1, [4*eax+ecx+1], 2      ; Insert a byte integer G
+    pinsrb  xmm1, [4*eax+ecx+2], 4      ; Insert a byte integer B
+    pinsrb  xmm1, [4*eax+ecx+3], 6      ; Insert a byte integer A
 
-    PADDQ   xmm2,xmm1                   ; xmm2 += xmm1
+    paddq   xmm2,xmm1                   ; xmm2 += xmm1
 
 move_cursor_to_next_row_in_kernel:
     inc     dword [cursorY]             ; cursor.y +=1
@@ -109,7 +107,7 @@ move_cursor_to_next_row_in_kernel:
     mov     dword [cursorX], esi        ; cursor.x = kernel.x
     sub     dword [cursorX], eax        ; cursor.x = cursor.x - window_size
 
-    mov     edi, dword [kernelY]        ; esi = kernel.y, probably loading not needed todo
+    mov     edi, dword [kernelY]        ; esi = kernel.y
     add     edi, eax
     cmp     [cursorY], edi
     jg      proc
@@ -119,9 +117,9 @@ move_cursor_to_next_row_in_kernel:
 proc:
 
     ;; xmm2 = xmm2/n*n
-    MOVDQ2Q mm0, xmm2                   ; mm0 = low xmm2
-    PSRLDQ  xmm2,8                      ; xmm2 shift right
-    MOVDQ2Q mm1, xmm2                   ; mm1 = low xmm2
+    movdq2q mm0, xmm2                   ; mm0 = low xmm2
+    psrldq  xmm2,8                      ; xmm2 shift right
+    movdq2q mm1, xmm2                   ; mm1 = low xmm2
 
     paddq   mm0,mm1                     ; mm0 += mm1
 
@@ -140,7 +138,7 @@ proc:
     mov     eax,0
     mov     edx,0
     mov     dl, byte[window_area]
-    movd    ecx,mm0                     ;ecx = LOW mm0
+    movd    ecx,mm0                     ; ecx = LOW mm0
 
     mov     ah,ch
     mov     al,cl
@@ -162,7 +160,7 @@ proc:
     div     dl
     mov     byte[esi+4*ebx+2],al        ; B
 
-    mov      byte[esi+4*ebx+3],255      ; A, always 255
+    mov     byte[esi+4*ebx+3],255       ; A, always 255
 
 
     inc     dword [kernelX]
@@ -178,6 +176,6 @@ skip1:
     jl      start_new_kernel
 
 
-	mov     eax,0     ;return 0
+	mov     eax,0                       ; return 0
 	leave
 	ret
